@@ -130,25 +130,6 @@ enum
 
 
     // Second cube (to the side, not textured) - repeat above, minus the texture
-    //glGenVertexArrays(1, &objects[1].vao);
-    //glGenBuffers(1, &objects[1].ibo);
-
-    //objects[1].numIndices = glesRenderer.GenCube(1.0f, &objects[1].vertices, &objects[1].normals, NULL, &objects[1].indices);
-
-    //glBindVertexArray(objects[1].vao);
-
-    //glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    //glBufferData(GL_ARRAY_BUFFER, 3*24*sizeof(GLfloat), objects[1].vertices, GL_STATIC_DRAW);
-    //glEnableVertexAttribArray(ATTRIB_POSITION);
-    //glVertexAttribPointer(ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), BUFFER_OFFSET(0));
-
-    //glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    //glBufferData(GL_ARRAY_BUFFER, 3*24*sizeof(GLfloat), objects[1].normals, GL_STATIC_DRAW);
-    //glEnableVertexAttribArray(ATTRIB_NORMAL);
-    //glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), BUFFER_OFFSET(0));
-
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects[1].ibo);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(objects[1].indices[0]) * objects[1].numIndices, objects[1].indices, GL_STATIC_DRAW);
     
     for (int i=1; i<sizeof(objects)/sizeof(objects[0]); i++) {
         glGenVertexArrays(1, &objects[i].vao);
@@ -167,7 +148,12 @@ enum
         glBufferData(GL_ARRAY_BUFFER, 3*24*sizeof(GLfloat), objects[i].normals, GL_STATIC_DRAW);
         glEnableVertexAttribArray(ATTRIB_NORMAL);
         glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), BUFFER_OFFSET(0));
-
+        
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+        glBufferData(GL_ARRAY_BUFFER, 2*24*sizeof(GLfloat), objects[i].texCoords, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(ATTRIB_TEXTURE);
+        glVertexAttribPointer(ATTRIB_TEXTURE, 3, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), BUFFER_OFFSET(0));
+        
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects[i].ibo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(objects[i].indices[0]) * objects[i].numIndices, objects[i].indices, GL_STATIC_DRAW);
         
@@ -215,11 +201,6 @@ enum
         objects[i].diffuseComponent = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
 
     }
-
-    //objects[1].diffuseLightPosition = GLKVector4Make(-2.0f, 1.0f, 0.0f, 1.0f);
-    //objects[1].diffuseComponent = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
-    //objects[2].diffuseLightPosition = GLKVector4Make(-2.0f, 1.0f, 0.0f, 1.0f);
-    //objects[2].diffuseComponent = GLKVector4Make(0.0f, 1.0f, 0.0f, 1.0f);
     
     // clear to black background
     glClearColor ( 0.0f, 0.0f, 0.0f, 0.0f );
@@ -263,14 +244,6 @@ enum
     objects[0].mvp = GLKMatrix4Multiply(perspective, objects[0].mvp);
 
     // move second cube to the right (along positive-x axis), and apply projection matrix
-    //objects[1].mvm = objects[1].mvp = GLKMatrix4Multiply(GLKMatrix4Translate(GLKMatrix4Identity, 1.5, 0.0, 0.0), objects[1].mvp);
-    //objects[1].normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(objects[1].mvp), NULL);
-    //objects[1].mvp = GLKMatrix4Multiply(perspective, objects[1].mvp);
-    
-    // move third cube to the left (along negative-x axis), and apply projection matrix
-    //objects[2].mvm = objects[2].mvp = GLKMatrix4Multiply(GLKMatrix4Translate(GLKMatrix4Identity, -1.5, 0.0, 0.0), objects[2].mvp);
-    //objects[2].normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(objects[2].mvp), NULL);
-    //objects[2].mvp = GLKMatrix4Multiply(perspective, objects[2].mvp);
     
     moveCubes(objects, 1, perspective, -1.5, 0);
     moveCubes(objects, 2, perspective, -1.5, -1);
@@ -364,30 +337,10 @@ void moveCubes(RenderObject objects[], int obj, GLKMatrix4 perspective, float x,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects[0].ibo);
     glDrawElements(GL_TRIANGLES, (GLsizei)objects[0].numIndices, GL_UNSIGNED_INT, 0);
     
-    // for second cube, turn off texture and use object-specific diffuse light, then pass on the object-specific matrices and VAO/IBO
-    //glUniform1i(uniforms[UNIFORM_USE_TEXTURE], 0);
-    //glUniform4fv(uniforms[UNIFORM_LIGHT_DIFFUSE_POSITION], 1, objects[1].diffuseLightPosition.v);
-    //glUniform4fv(uniforms[UNIFORM_LIGHT_DIFFUSE_COMPONENT], 1, objects[1].diffuseComponent.v);
-    //glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, FALSE, (const float *)objects[1].mvp.m);
-    //glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEW_MATRIX], 1, FALSE, (const float *)objects[1].mvm.m);
-    //glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, objects[1].normalMatrix.m);
-    //glBindVertexArray(objects[1].vao);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects[1].ibo);
-    //glDrawElements(GL_TRIANGLES, (GLsizei)objects[1].numIndices, GL_UNSIGNED_INT, 0);
-    
-    // for third cube, turn off texture and use object-specific diffuse light, then pass on the object-specific matrices and VAO/IBO
-    //glUniform1i(uniforms[UNIFORM_USE_TEXTURE], 0);
-    //glUniform4fv(uniforms[UNIFORM_LIGHT_DIFFUSE_POSITION], 1, objects[2].diffuseLightPosition.v);
-    //glUniform4fv(uniforms[UNIFORM_LIGHT_DIFFUSE_COMPONENT], 1, objects[2].diffuseComponent.v);
-    //glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, FALSE, (const float *)objects[2].mvp.m);
-    //glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEW_MATRIX], 1, FALSE, (const float *)objects[2].mvm.m);
-    //glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, objects[2].normalMatrix.m);
-    //glBindVertexArray(objects[2].vao);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, objects[2].ibo);
-    //glDrawElements(GL_TRIANGLES, (GLsizei)objects[2].numIndices, GL_UNSIGNED_INT, 0);
+    // for second cube, turn off texture and use object-specific diffuse light, then pass on the
 
     for (int i=1; i<sizeof(objects)/sizeof(objects[0]); i++) {
-        glUniform1i(uniforms[UNIFORM_USE_TEXTURE], 0);
+        glUniform1i(uniforms[UNIFORM_USE_TEXTURE], 1);
         glUniform4fv(uniforms[UNIFORM_LIGHT_DIFFUSE_POSITION], 1, objects[i].diffuseLightPosition.v);
         glUniform4fv(uniforms[UNIFORM_LIGHT_DIFFUSE_COMPONENT], 1, objects[i].diffuseComponent.v);
         glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, FALSE, (const float *)objects[i].mvp.m);
